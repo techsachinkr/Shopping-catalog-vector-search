@@ -261,13 +261,13 @@ python src/metrics_visualisation.py
 
 1. Balanced Dataset - Best Performers:
 - HITS@k_1: flat + 384dim (1.000)
-- HITS@k_5: flat + 768dim, hnsw + 768dim, flat + 384dim (1.000)
-- HITS@k_10: flat + 768dim,hnsw + 768dim,hnsw + 384dim (1.000)
+- HITS@k_5: flat + 768dim, hnsw + 768dim, flat + 384dim, hnsw + 384dim (1.000)
+- HITS@k_10: flat + 768dim,hnsw + 768dim, flat + 384dim,hnsw + 384dim (1.000)
 
 2. Imbalanced Dataset - Best Performers:
-- HITS@k_1: ivf + 768dim, hnsw + 768dim (0.180)
-- HITS@k_5: hnsw + 768dim, hnsw + 384dim, flat + 384dim (0.440)
-- HITS@k_10: flat + 768dim (0.540)
+- HITS@k_1: flat + 384dim, hnsw + 384dim (0.660)
+- HITS@k_5: flat + 768dim, flat + 384dim, hnsw + 384dim (0.660)
+- HITS@k_10: flat + 768dim, flat + 384dim, hnsw + 384dim (0.660)
 
 - Performance comparison in the plot below:
 
@@ -277,15 +277,15 @@ python src/metrics_visualisation.py
 ### Debugging Low performance on imabalanced dataset
 Notebook: debug_imbalanced_dataset_metrics.ipynb
 
-For the 17 queries out of 50 queries that were missing in imbalanced dataset, performance was lowest, like:
-HITS@10 (average) : 0.41
-HITS@5 (average) : 0.41
-HITS@1 (average) : 0.11
+For the 17 queries out of 50 queries that were missing in imbalanced dataset, there were no matches, with metrics:
+HITS@10 (average) : 0
+HITS@5 (average) : 0
+HITS@1 (average) : 0
 
-For the common queries, with many of those overrepresented, performance was :
-HITS@10 (average) : 0.58
-HITS@5 (average) : 0.45
-HITS@1 (average) : 0.21
+For the common queries, with many of those overrepresented, performance was as expected higher:
+HITS@10 (average) : 0.97
+HITS@5 (average) : 0.97
+HITS@1 (average) : 0.94
 
 
 ## Overall insights:

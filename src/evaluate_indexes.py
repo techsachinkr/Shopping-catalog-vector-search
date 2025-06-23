@@ -11,7 +11,7 @@ import time
 base_dir_path=os.getcwd()
 
 sampled_datavals_product=pd.read_parquet(os.path.join(base_dir_path,"dataset/sampled_dataset/sampled_datavals_product_data.parquet"))
-sampled_datavals_product['ID'] = np.arange(0, len(sampled_datavals_product))
+sampled_datavals_product_imbalanced=pd.read_parquet(os.path.join(base_dir_path,"dataset/sampled_dataset/sampled_datavals_product_data_imbalanced.parquet"))
 
 sampled_queries = pd.read_parquet(os.path.join(base_dir_path,"dataset/sampled_dataset/sampled_query_examples.parquet"))
 
@@ -37,7 +37,7 @@ class EvaluateIndex:
       return faiss.read_index(index_path)
 
 
-  def calculate_top_k_metrics(self):
+  def calculate_top_k_metrics(self, dataset_type):
       metrics={
           "HITS@k": {1:[],5:[],10:[]},
           "MRR": {1:[],5:[],10:[]}
@@ -51,7 +51,10 @@ class EvaluateIndex:
           for top_k in self.top_k_values:
               start_time = time.time()
               scores, indices = self.index.search(query_embedding, top_k)
-              retrieved_examples=sampled_datavals_product[sampled_datavals_product['ID'].isin(indices[0])]
+              if dataset_type=="balanced":
+                retrieved_examples=sampled_datavals_product[sampled_datavals_product['ID'].isin(indices[0])]
+              else:
+                retrieved_examples=sampled_datavals_product_imbalanced[sampled_datavals_product_imbalanced['ID'].isin(indices[0])]
               retrieved_examples_ids=retrieved_examples["product_id"].tolist()
 
               hitvals=self._calculate_hits_at_k(relevant_ids,retrieved_examples_ids)
@@ -71,7 +74,7 @@ class EvaluateIndex:
       return avg_metrics
   
 
-  def calculate_top_k_metrics_debug(self):
+  def calculate_top_k_metrics_debug(self, dataset_type):
         all_metrics=[]
         
         times=[]
@@ -88,7 +91,11 @@ class EvaluateIndex:
             for top_k in self.top_k_values:
                 start_time = time.time()
                 scores, indices = self.index.search(query_embedding, top_k)
-                retrieved_examples=sampled_datavals_product[sampled_datavals_product['ID'].isin(indices[0])]
+                if dataset_type=="balanced":
+                    retrieved_examples=sampled_datavals_product[sampled_datavals_product['ID'].isin(indices[0])]
+                else:
+                    retrieved_examples=sampled_datavals_product_imbalanced[sampled_datavals_product_imbalanced['ID'].isin(indices[0])]
+
                 retrieved_examples_ids=retrieved_examples["product_id"].tolist()
 
                 hitvals=self._calculate_hits_at_k(relevant_ids,retrieved_examples_ids)
@@ -136,7 +143,7 @@ if __name__ == "__main__":
         dirpath=os.path.join(base_dir_path,"vector_indexes/balanced_dataset/768dim/all_product_fields_768dim_"+suffix+".index")
         
         eval_index_obj= EvaluateIndex(dirpath, generate_embeddings_base_obj, eval_queries)
-        metrics = eval_index_obj.calculate_top_k_metrics()
+        metrics = eval_index_obj.calculate_top_k_metrics(dataset_type="balanced")
         logger.info("Metrics for balanced dataset, all_product_fields_768dim_"+suffix+".index")
         logger.info(metrics)
         metrics_vals.append({"dataset":"balanced","index_type":suffix, "embeddings_type":"all_product_fields_768dim",
@@ -157,7 +164,7 @@ if __name__ == "__main__":
     for suffix in index_suffix:
         dirpath=os.path.join(base_dir_path,"vector_indexes/balanced_dataset/384dim/product_fields_exclude_desc_384dim_"+suffix+".index")
         eval_index_obj= EvaluateIndex(dirpath, generate_embeddings_small_obj, eval_queries)
-        metrics = eval_index_obj.calculate_top_k_metrics()
+        metrics = eval_index_obj.calculate_top_k_metrics(dataset_type="balanced")
         logger.info("Metrics for balanced dataset, product_fields_exclude_desc_384dim_"+suffix+".index")
         logger.info(metrics)
         metrics_vals.append({"dataset":"balanced","index_type":suffix, "embeddings_type":"product_fields_exclude_desc_384dim",
@@ -179,7 +186,7 @@ if __name__ == "__main__":
     for suffix in index_suffix:
         dirpath=os.path.join(base_dir_path,"vector_indexes/imbalanced_dataset/768dim/all_product_fields_768dim_"+suffix+".index")
         eval_index_obj= EvaluateIndex(dirpath, generate_embeddings_base_obj, eval_queries)
-        metrics = eval_index_obj.calculate_top_k_metrics()
+        metrics = eval_index_obj.calculate_top_k_metrics(dataset_type="imbalanced")
         logger.info("Metrics for imbalanced dataset, all_product_fields_768dim_"+suffix+".index")
         logger.info(metrics)
         metrics_vals.append({"dataset":"imbalanced","index_type":suffix, "embeddings_type":"all_product_fields_768dim",
@@ -199,7 +206,7 @@ if __name__ == "__main__":
     for suffix in index_suffix:
         dirpath=os.path.join(base_dir_path,"vector_indexes/imbalanced_dataset/384dim/product_fields_exclude_desc_384dim_"+suffix+".index")
         eval_index_obj= EvaluateIndex(dirpath, generate_embeddings_small_obj, eval_queries)
-        metrics = eval_index_obj.calculate_top_k_metrics()
+        metrics = eval_index_obj.calculate_top_k_metrics(dataset_type="imbalanced")
         logger.info("Metrics for imbalanced dataset, product_fields_exclude_desc_384dim_"+suffix+".index")
         logger.info(metrics)
         metrics_vals.append({"dataset":"imbalanced","index_type":suffix, "embeddings_type":"product_fields_exclude_desc_384dim",
@@ -221,7 +228,7 @@ if __name__ == "__main__":
     
     dirpath=os.path.join(base_dir_path,"vector_indexes/imbalanced_dataset/768dim/all_product_fields_768dim_hnsw.index")
     eval_index_obj= EvaluateIndex(dirpath, generate_embeddings_base_obj, eval_queries)
-    metrics = eval_index_obj.calculate_top_k_metrics_debug()
+    metrics = eval_index_obj.calculate_top_k_metrics_debug(dataset_type="imbalanced")
     debug_metrics_df=pd.DataFrame(metrics)
     debug_metrics_df.to_excel(os.path.join(base_dir_path,"metrics/debug_metrics.xlsx"),index=False)
 
