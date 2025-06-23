@@ -229,6 +229,8 @@ Following metrics used:
 ```bash
 python src/metrics_visualisation.py
 ```
+It will generate metrics to a excel file located in metrics/metrics.xlsx
+
 
 ## Evaluation results plots
 
