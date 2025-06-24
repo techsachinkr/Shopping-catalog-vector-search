@@ -144,15 +144,21 @@ Indexes created:
 Now in both the indexes folder above, following algorithms used for creating indexes
 1. IndexFlatIP : 
    - Create FAISS Flat index (exact search with inner product/cosine similarity).
+   - serves as ground truth baseline
+   - essential for measuring how much accuracy you sacrifice with approximate methods
    - Indexes generated with suffix "_flat.index"
 2. IndexIVFFlat and IndexFlatIP: 
-   - Create FAISS IVF (Inverted File) index for faster approximate search
+   - Create FAISS IVF (Inverted File) index for faster approximate search, with IndexFlatIP serving as quantizer
+   - represents the classic clustering approach, perfect for studying recall-speed tradeoffs and understanding traditional approximate search behavior
    - Indexes generated with suffix "_ivf.index"
 3. IndexHNSWFlat:
    - Create FAISS HNSW (Hierarchical Navigable Small World) index
+   - gives state-of-the-art performance
+   - relevant for high-dimensional semantic embeddings where graph-based methods excel.
    - Indexes generated with suffix "_hnsw.index"
 4. IndexIVFPQ and IndexFlatIP:
-   - Create FAISS IVF+PQ index combining clustering and compression
+   - Create FAISS IVF+PQ index combining clustering and compression, with IndexFlatIP serving as quantizer
+   - Preferrable for large datasets with memory constraints, used here to see value it provides 
    - Indexes generated with suffix "_ivf_pq.index"
 
 
