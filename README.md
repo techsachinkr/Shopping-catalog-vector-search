@@ -162,6 +162,13 @@ Now in both the indexes folder above, following algorithms used for creating ind
    - Indexes generated with suffix "_ivf_pq.index"
 
 
+## Querying index files individually for a query
+Notebook: notebooks/experiment_with_index.ipynb
+
+```bash
+python src/experiment_index.py
+```
+
 # Evaluations
 
 ## Running evaluation
