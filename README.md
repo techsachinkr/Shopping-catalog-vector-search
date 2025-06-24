@@ -33,7 +33,7 @@ cd ../
 git clone https://github.com/amazon-science/esci-data.git
 cd esci-data
 git lfs pull
-cd  Shopping-catalog-vector-search
+cd  ../Shopping-catalog-vector-search
 cp  ../esci-data/shopping_queries_dataset/shopping_queries_dataset_examples.parquet  ./dataset/source_files/shopping_queries_dataset_examples.parquet
 cp  ../esci-data/shopping_queries_dataset/shopping_queries_dataset_products.parquet  ./dataset/source_files//shopping_queries_dataset_products.parquet
 ```
@@ -242,10 +242,12 @@ Following metrics used:
 ```bash
 python src/metrics_visualisation.py
 ```
-It will generate metrics to a excel file located in metrics/metrics.xlsx
+- It will generate metrics to a excel file located in metrics/metrics.xlsx
 
 
 ## Evaluation results plots
+
+- generated in metrics folder
 
 ### Balanced dataset performance
 
@@ -284,7 +286,7 @@ It will generate metrics to a excel file located in metrics/metrics.xlsx
 - HITS@k_5: flat + 768dim, flat + 384dim, hnsw + 384dim (0.660)
 - HITS@k_10: flat + 768dim, flat + 384dim, hnsw + 384dim (0.660)
 
-- Performance comparison in the plot below:
+Performance comparison in the plot below:
 
 ![Alt text](metrics/performance_heatmap.png)
 
